@@ -1,5 +1,3 @@
-# Project-2
-#prueba N2
 import datetime
 
 class Abc:
