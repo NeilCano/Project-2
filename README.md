@@ -1,134 +1,229 @@
-import datetime
+from datetime import datetime, date
+import sys 
 
-class Abc:
-    profiles=[[]] #for storing profiles details
+class User(): 
+    username = ''
+    password = ''
+    address = ''
+    mobile =0
+    dateBirth= datetime.now()
+    age=0
+
+class OrderAvailable(object):
+    amount = 0
+    date = datetime.now()
+    id = 0
+    def __init__(self, products, type):
+        self.products = products
+        self.type = type
     
-    def signUp(self):
-        name=input("Please enter your name : ")
-        ph=input("Please enter your mobile number : ")
-        pwd=input("Please enter your Password : ")
-        con_Pwd=input("Please confirm your Password : ")
-        dob=input("please Enter your Date of Birth # DD/MM/YY (No Space) : ")
-        #check phone numbner is correct
-        if(ph[0]!=0 and len(ph)!=10): 
-            print("You have enter Phone number invalid format")
-            print("Please try again:")
-            return False
-        #check password last digit is numric
-        if( pwd[-1].isnumeric()==False):
-            print("Password should end with number")
-            print("Please try again:")
-            return False
-        #check these charactors are present in password
-        character=['@','#','$']
-        result = [ele for ele in character if(ele in pwd)] #return false if this charactore not present
-        if(result==False):
-            print("Password should include @,# or $")
-            print("Please try again:")
-            return False
 
-        #check password and confirm password is not correct
-        if(pwd!=con_Pwd):
-            print("Your password should be same")
-            print("Please try again:")
-            return False
+class ProductsAvailable(object):
+    def __init__(self, name, price):
+        self.name = name
+        self.price = price
 
-       #checking date format
-        out=True
-        try:
-            day, month, year = dob.split('/') #split the date, month and year
-            datetime.datetime(int(year), int(month), int(day))  #check its in date format
-        except ValueError:
-            out = False #if not return false
-        if(out==False):
-            print("Date should be in correct format")
-            print("Please try again:")
-            return False
-        
-        #check age
-        dob_year=dob[-3:]  #return last 4 letters of dob, (year of birth)
-        if((2022-int(dob_year))<18):
-            print("Your age should be atleast 18 year old")
-            print("Please try again:")
-            return False
+def password_check(passwd):
+    SpecialSym =['$', '@', '#', '%']
+    val = True
+    if not any(char.isdigit() for char in passwd):
+        print('Password should have at least one numeral')
+        val = False
+    if not any(char in SpecialSym for char in passwd):
+        print('Password should have at least one of the symbols $@#')
+        val = False
+    if val:
+        return val
 
-        #create a list with the details
-        lst=[name,ph,pwd,con_Pwd,dob]  #append this list to the profiles list
-        self.profiles.append(lst)
-        print("You have sussesfully signed up")
+def age(birthdate):
+    today = date.today()
+    age = today.year - birthdate.year - ((today.month, today.day) < (birthdate.month, birthdate.day))
+    return age
 
-
-    def Login(profiles):
-        login_attempt=0 #to count invalid login attempt
-        while(True):
-            uname=input("Please enter your username (mobile numbner) ")
-            pwd= input("Please enter your password ")
-
-            login_flag=False  #flag for sucess login
-            for list in profiles:  #list is each list in profiles(multiimentional list)
-                for i in range(0,len(list)):  #iterate through the list elements
-                    if(list[1]==uname and list[2]==pwd):  #check uname and pwd is in the list at the correct pos
-                        login_flag=True 
-                        name=list[0]  #name is stored to name
-
-            if(login_flag==False):  #if login is false invalid_attempt increase
-                print("You are not authorised")
-                login_attempt=login_attempt+1
-            
-            else:
-            #sucess login
-                print("You have successfully signed in ")
-                print("welecome "+name)
-            #break from entire loop
-#     #give more options
-# while(True):
-#         print("Please enter 1 for resetting the password :")
-#         print("Please enter 2 for signout")
-#         choice=input()
-#         #if choice is 1 . reset() from task3 is called
-#         if(choice=="1"):
-#             reset(profiles)
-#         if(choice=="2"):
-#             print("you have sucessfuly logged out")
-#             break
-# #main body
-
-while(True):
-    print("Please enter 1 for signup:")
-    print("Please enter 2 for login:")
-    print("Please enter 3 for exit:")
-    choice=input()
-    #if choice is 1 new class objeect is created for Abc is created anbd signUp function is called
-    if(choice=="1"): 
-        o=Abc()
-        o.signUp()
-
-    #if choice is 2 login method from task2 file is called passing the profile list
-    if(choice=="2"):
-        o=Abc()
-        o.Login()
-
-    #if choice is 3 break from loops
-    if(choice=="3"):
-        print("Thank you for using the application")
-        break
-    if(choice == "2.1"):
-        break
-       
-def login2():
-    while (True): 
-        print("Please enter 1 for signup: ")
-        print("Please enter 2 for login: ")
-        print("Please enter 3 for exit: ")
-        choice1=input()
-        
-        if(choice1 == "2.1"):
-            print()
-            #self.dineIn
-                
-        if(choice1 == "2.2"):
-            print("you are in statistics")
-
-        if(choice1 == "2.3"):
-            print("Thank you for using the application")
+def SignUp(user):
+    user.name = input('Please enter your name:')
+    user.address = input('Please enter your address or press enter to skip:')
+    while True:
+        user.mobile = input("Please enter your mobile number:")
+        if len(user.mobile) != 10 or int(str(user.mobile)[:1]) != 0:
+            print("The mobile number has 10 digits and must starts with 0 .")
+        else:
             break
+
+    while True:
+        user.password = input("Please enter your password:")
+        if not password_check(user.password):
+            print("Invalid Password !!1")
+        else:
+            break
+
+    while True:
+        user.password = input("Please re- enter your password:")
+        if not password_check(user.password):
+            print("Invalid Password !!")
+        else:
+            break
+
+    while True:
+        user.dateBirth = input("Please enter your Date of Birth # DD/MM/YYYY (No Space):")
+        try:
+            user.dateBirth = datetime.strptime(user.dateBirth, '%d/%m/%Y')
+            user.age = int(age(user.dateBirth))
+            if  user.age<18:
+                print("Invalid Age !!")
+            else:
+                break
+        except ValueError:
+            print()
+    
+    print("You have successfully signed up")
+
+
+def Ordering(order):
+    print(" Please Enter 1 to for Dine in \n Please enter 2 for Order Online \n Please enter 3 to go Login Page ")
+    menu = int(input())
+    if menu==1:
+        Order(order, 'DineIn')
+    elif menu==2:
+        Order(order, 'OrderOnline')
+    else:
+        sys.exit()
+
+
+def Order(order, type):
+    productsAvailable = []
+    productsAvailable.append(ProductsAvailable('Noodles',2))
+    productsAvailable.append(ProductsAvailable('Sandiwch',4))
+    productsAvailable.append(ProductsAvailable('Dumpling',6))
+    productsAvailable.append(ProductsAvailable('Muffins',8))
+    productsAvailable.append(ProductsAvailable('Pasta',10))
+    productsAvailable.append(ProductsAvailable('Pizza',20))
+
+    while True:
+        print(" Enter 1 for Noodles Price AUD 2 \n Enter 2 for Sandiwch Price AUD 4 \n Enter 3 for Dumpling AUD 6 \n Enter 4 for Muffins Price AUD 8 \n Enter 5 for Pasta Price AUD 10 \n Enter 6 for Pizza Price AUD 20 \n Enter 7 for Drinks Menu: ")
+        menu = int(input())
+        if menu <= 6:
+            order.append(productsAvailable[menu-1])
+        elif menu == 7:
+             OrderDrinks(order, type)
+             break;
+        else:
+            break
+
+def OrderDrinks(order, type):
+    while True:
+        print("Enter 1 for Coffee Price AUD 2 \n  Enter 2 for Colddrink Price AUD 4 \n  Enter 3 for Shake AUD 6 \n   Enter 4 for checkout ")
+        menu = int(input())
+        if menu == 1:
+            product = ProductsAvailable('Coffee', 2)
+            order.append(product)
+        elif menu == 2:
+            product = ProductsAvailable('Colddrink', 2)
+            order.append(product)
+        elif menu == 3:
+            product = ProductsAvailable('Shake', 6)
+            order.append(product)
+        elif menu == 4:
+            Checkout(order, type)
+            break;
+        else:
+            break
+
+
+def Checkout(order, type):
+    orderFinally = OrderAvailable(order, type)
+    price = 0
+    for product in orderFinally.products:
+        price += product.price
+
+    serviceCharges=0
+    if orderFinally.type == 'DineIn':
+        serviceCharges += (15 * price) / 100.0
+
+    print("Your total payble amount is: " + str(price) + " inclusing AUD " + str(serviceCharges) + " for Service Charges, please click  'yes' for Collect or  'no' for cancel the order")
+    menu = input()
+    if menu == 'yes':
+        print("A fix charges for Delivery based on the distance i.e.\n More than 0 to 5 Kms AUD 5 \n More than 5 to 10 Kms AUD 10 \n More than 10 to 15 Kms AUD 18 \n More than 15Kms No Delivery provided")
+        menu = int(input())
+        if menu == 1:
+            serviceCharges += 5
+        elif menu == 2:
+            serviceCharges += 10
+        elif menu == 3:
+            serviceCharges += 12
+        elif menu == 4:
+            serviceCharges += 0
+    elif menu == 'no':
+        SignIn()
+    else:
+        sys.exit()
+    
+    price += serviceCharges
+    print("Your total payble amount is: " + str(price) + "inclusing AUD " + str(serviceCharges) + "for additional charges for delivery")
+    print("please click  'yes' to confirm the order, or 'no' to cancel")
+    
+
+    menu = input()
+    if menu == 'yes':
+        orderFinally.amount = price
+        orderFinally.id = len(orders) + 1
+        orders.append(orderFinally)
+        print("Thank you for the confirmation, your order has been confirmed")
+        Menu([])
+    elif menu == 'no':
+        SignIn(orderFinally)
+
+def History():
+    print("Please Enter the option to Print the Statistics \n 1 - All Dine in Orders  \n 2 - All Pick up Orders \n 3 - All Deliveries \n 4 - Total Amount Spent on All Orders  ")
+    menu = int(input())
+    if menu == 1:
+        print(f'Date    |Order Id   |Type of Order  |Order Amount   ')
+        for order in orders:
+            if order.type == 'DineIn':
+                print(f'{str(order.date)}   |{str(order.id)}    |{str(order.type)}  |{str(order.amount)}')
+    elif  menu == 2:
+        print(f'Date    |Order Id   |Type of Order  |Order Amount   ')
+        for order in orders:
+            if order.type == 'OrderOnline':
+                print(f'{str(order.date)}   |{str(order.id)}    |{str(order.type)}  |{str(order.amount)}')
+    elif menu == 3 :
+        print(f'Date    |Order Id   |Type of Order  |Order Amount   ')
+        for order in orders:
+            print(f'{str(order.date)}   |{str(order.id)}    |{str(order.type)}  |{str(order.amount)}')
+    elif menu == 4:
+        totalAmount = 0
+        for order in orders:
+            totalAmount += order.amount
+        print(f'Total Amount Orders :{str(totalAmount)}')
+    Menu([])
+def SignIn():
+    user.username = input("Please enter your Username(Mobile Number):")
+    user.password = input("Please enter your password:")
+    order = []
+    Menu(order)
+
+def Menu(order):
+    print("You have successfully Signed In  \n Please Enter 1 to start Ordering  \n Please enter 2 to print statics \n Please Enter 3 for Logout  ")
+    menu = int(input())
+    if menu==1:
+        Ordering(order)
+    elif menu==2:
+        History()
+    else:
+        sys.exit()
+
+def Quit():
+  print("Hello!")
+
+user = User()
+menu = 0
+orders = []
+print("Please Enter 1 for Sign up.  \nPlease Enter 2 for Sign in  \nPlease Enter 3 for Quit. ")
+menu = int(input())
+if menu==1:
+    SignUp(user)
+elif menu==2:
+    SignIn()
+else:
+    sys.exit()
+
